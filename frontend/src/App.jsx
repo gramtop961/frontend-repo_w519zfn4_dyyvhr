@@ -3,8 +3,18 @@ import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import ProductCard from './components/ProductCard'
 import Footer from './components/Footer'
+import Filters from './components/Filters'
 
 const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000'
+
+const CATEGORY_LABELS = [
+  'home decor',
+  'kitchen',
+  'artificial jewelry',
+  'pet supplies',
+  'health and wellness',
+  'electronics',
+]
 
 export default function App() {
   const [products, setProducts] = useState([])
@@ -13,21 +23,30 @@ export default function App() {
   const [error, setError] = useState('')
   const [openCart, setOpenCart] = useState(false)
 
-  useEffect(() => {
-    async function fetchProducts() {
-      setLoading(true)
-      try {
-        const res = await fetch(`${API_BASE}/products`)
-        const data = await res.json()
-        setProducts(data)
-      } catch (e) {
-        setError('Failed to load products')
-      } finally {
-        setLoading(false)
-      }
+  const [query, setQuery] = useState('')
+  const [category, setCategory] = useState(null)
+
+  async function loadProducts(params = {}) {
+    setLoading(true)
+    try {
+      const qs = new URLSearchParams()
+      if (params.q) qs.set('q', params.q)
+      if (params.category) qs.set('category', params.category)
+      const url = `${API_BASE}/products${qs.toString() ? `?${qs.toString()}` : ''}`
+      const res = await fetch(url)
+      const data = await res.json()
+      setProducts(data)
+    } catch (e) {
+      setError('Failed to load products')
+    } finally {
+      setLoading(false)
     }
-    fetchProducts()
-  }, [])
+  }
+
+  useEffect(() => {
+    loadProducts({ q: query, category })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [query, category])
 
   function addToCart(product) {
     setCart(prev => {
@@ -52,6 +71,15 @@ export default function App() {
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-semibold text-[#012958]">Featured essentials</h2>
         </div>
+
+        <Filters
+          categories={CATEGORY_LABELS}
+          selected={category}
+          onSelect={setCategory}
+          query={query}
+          onQuery={setQuery}
+          onClear={() => { setQuery(''); setCategory(null); }}
+        />
 
         {loading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
