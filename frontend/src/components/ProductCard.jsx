@@ -1,4 +1,5 @@
 export default function ProductCard({ product, onAdd }) {
+  const inr = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })
   return (
     <div className="group rounded-xl border border-slate-200 bg-white overflow-hidden hover:shadow-lg transition">
       <div className="aspect-square bg-slate-100 overflow-hidden">
@@ -12,7 +13,7 @@ export default function ProductCard({ product, onAdd }) {
         <h3 className="font-semibold text-slate-800">{product.name}</h3>
         <p className="text-slate-500 text-sm line-clamp-2 mt-1">{product.description}</p>
         <div className="mt-3 flex items-center justify-between">
-          <span className="text-[#012958] font-semibold">${product.price.toFixed(2)}</span>
+          <span className="text-[#012958] font-semibold">{inr.format(product.price)}</span>
           <button onClick={() => onAdd(product)} className="px-3 py-1.5 rounded-md bg-[#012958] text-white text-sm hover:bg-[#0d2144]">Add</button>
         </div>
       </div>

@@ -26,6 +26,8 @@ export default function App() {
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState(null)
 
+  const inr = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 })
+
   async function loadProducts(params = {}) {
     setLoading(true)
     try {
@@ -118,7 +120,7 @@ export default function App() {
                     </div>
                     <div className="flex-1">
                       <p className="font-medium">{item.name}</p>
-                      <p className="text-sm text-slate-500">${(item.price * item.quantity).toFixed(2)}</p>
+                      <p className="text-sm text-slate-500">{inr.format(item.price * item.quantity)}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <button className="px-2 py-1 border rounded" onClick={() => setCart(prev => prev.map(i => i.id === item.id ? { ...i, quantity: Math.max(1, i.quantity - 1) } : i))}>-</button>
@@ -132,7 +134,7 @@ export default function App() {
             <div className="pt-3 border-t">
               <div className="flex items-center justify-between font-semibold">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>{inr.format(total)}</span>
               </div>
               <button
                 className="mt-3 w-full py-2 rounded-md bg-[#6592c4] text-white hover:bg-[#4f7fb1]"
